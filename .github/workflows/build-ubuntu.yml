@@ -1,0 +1,30 @@
+name: Ubuntu Build
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/setup-go@v2
+      with:
+        go-version: '^1.13.1'
+
+    - name: Download sources
+      run: |
+        git clone https://github.com/coredns/coredns.git
+        (cd coredns; git checkout v1.7.0)
+
+    - name: Build
+      run: |
+        mkdir coredns/build
+        (cd coredns; make coredns BINARY=build/coredns-linux-amd64 SYSTEM="GOOS=linux GOARCH=amd64" CHECKS="" BUILDOPTS="")
+        (cd coredns; make coredns BINARY=build/coredns-windows-amd64.exe SYSTEM="GOOS=windows GOARCH=amd64" CHECKS="" BUILDOPTS="")
+        (cd coredns; make coredns BINARY=build/coredns-darwin-amd64 SYSTEM="GOOS=darwin GOARCH=amd64" CHECKS="" BUILDOPTS="")
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: artifacts
+        path: coredns/build
