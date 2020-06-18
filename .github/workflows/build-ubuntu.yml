@@ -18,6 +18,9 @@ jobs:
 
     - name: Build
       run: |
+        echo "fanout:github.com/networkservicemesh/fanout" | tee -a coredns/plugin.cfg
+        (cd coredns; make gen)
+
         mkdir coredns/build
         (cd coredns; make coredns BINARY=build/coredns-linux-amd64 SYSTEM="GOOS=linux GOARCH=amd64" CHECKS="" BUILDOPTS="")
         (cd coredns; make coredns BINARY=build/coredns-windows-amd64.exe SYSTEM="GOOS=windows GOARCH=amd64" CHECKS="" BUILDOPTS="")
